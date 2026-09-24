@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALP Final Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #020617, #1e1b4b, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Main wrapper */
+        .presentation-view {
+            width: 95%;
+            max-width: 1400px;
+            height: 88vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Slides */
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 55px 60px;
+            display: flex;
+            gap: 50px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.95) translateX(40px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateX(0);
+        }
+
+        .slide-content {
+            flex: 1.3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .slide-visual {
+            flex: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .slide-visual img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: transform 0.6s ease;
+        }
+
+        .slide.active .slide-visual img {
+            transform: scale(1.015);
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 0.4rem;
+            background: linear-gradient(to right, #a78bfa, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-bottom: 2.5rem;
+        }
+
+        ul { list-style: none; }
+
+        li {
+            font-size: 1.35rem;
+            margin-bottom: 1.2rem;
+            padding: 1.1rem 1.3rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--accent-secondary);
+            border-radius: 0 14px 14px 0;
+            transition: all 0.3s ease;
+            line-height: 1.45;
+        }
+
+        li:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.07);
+            border-left-color: var(--accent-primary);
+        }
+
+        .highlight {
+            color: #38bdf8;
+            font-weight: 700;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 4px 13px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin-right: 10px;
+            letter-spacing: 0.5px;
+            vertical-align: middle;
+        }
+
+        .pill.in {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .pill.out {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Center-only slides (intro/outro) */
+        .center-slide .slide-content {
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+
+        .center-slide p {
+            font-size: 1.4rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            line-height: 1.6;
+        }
+
+        /* Slide counter badge */
+        .slide-counter {
+            position: absolute;
+            top: 28px;
+            right: 40px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            z-index: 10;
+            letter-spacing: 1px;
+        }
+
+        /* Navigation */
+        .controls {
+            position: absolute;
+            bottom: 38px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Keyboard hint */
+        .key-hint {
+            position: absolute;
+            bottom: 48px;
+            right: 40px;
+            font-size: 0.8rem;
+            color: rgba(148, 163, 184, 0.5);
+            z-index: 10;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, #38bdf8, #a78bfa);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-view">
+
+        <!-- Slide counter -->
+        <div class="slide-counter" id="slideCounter">1 / 5</div>
+
+        <!-- SLIDE 0: Intro -->
+        <div class="slide active center-slide">
+            <div class="slide-content">
+                <h1>Designing My Life</h1>
+                <h2>ALP Final Project</h2>
+                <p>My personal style, the neighborhood I want to live in, and my goals for the future.</p>
+            </div>
+        </div>
+
+        <!-- SLIDE 1: Part 1 – Fashion -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>Personal Style</h1>
+                <h2>Part 1 · Fashion (Unit 4)</h2>
+                <ul>
+                    <li><span class="pill in">IN STYLE</span> Oversized blazers are completely <em>in style</em> — very casual but also very stylish.</li>
+                    <li><span class="highlight">Key Idea:</span> You don't need expensive brands to look good.</li>
+                    <li><span class="highlight">My Take:</span> Fashion is about finding a <em>unique style</em> that makes you feel <em>confident</em> every day.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <img src="fashion_unit4.jpg" alt="Oversized blazer, wide-leg trousers, retro sneakers and minimalist bag flat-lay">
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Part 2 – Neighborhood -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>Ideal Neighborhood</h1>
+                <h2>Part 2 · Where I Want to Live (Unit 5)</h2>
+                <ul>
+                    <li><span class="highlight">Walkable:</span> Stores close by so I can run errands or go <em>grocery shopping</em> on foot.</li>
+                    <li><span class="highlight">Safe &amp; Accessible:</span> Wide sidewalks &amp; safe bike lanes for <em>pedestrians</em> and <em>cyclists</em> — no terrible traffic.</li>
+                    <li><span class="highlight">My Dream:</span> A quiet, green neighborhood. For me, that would be <em>magical</em>.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <img src="neighborhood_unit5.jpg" alt="Walkable neighborhood with cafes, green trees, cyclists and pedestrians">
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Part 3 – Timeline -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>My Future Goals</h1>
+                <h2>Part 3 · Future Timeline (Unit 6)</h2>
+                <ul>
+                    <li><span class="highlight">Near Future:</span> After <em>graduation</em>, I <em>plan to</em> create a resume and do an <em>internship</em> to get experience.</li>
+                    <li><span class="highlight">Big Decision:</span> At some point, I <em>will choose</em> to stay in a company — or <em>eventually</em> be my own boss.</li>
+                    <li><span class="highlight">My Promise:</span> I know I <em>will face</em> challenges, but I <em>am going to work hard</em> to achieve my dreams.</li>
+                </ul>
+            </div>
+            <div class="slide-visual">
+                <img src="timeline_unit6.jpg" alt="Career timeline: graduation, corporate, global remote work">
+            </div>
+        </div>
+
+        <!-- SLIDE 4: Conclusion -->
+        <div class="slide center-slide">
+            <div class="slide-content">
+                <h1 style="font-size: 6rem;">Thank You!</h1>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <button class="nav-btn" onclick="prevSlide()" title="Previous (←)">
+                <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="nav-btn" onclick="nextSlide()" title="Next (→ / Space)">
+                <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+
+        <div class="key-hint">← → or Space</div>
+
+        <!-- Progress bar -->
+        <div class="progress-bar" id="progressBar" style="width: 20%;"></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const slideCounter = document.getElementById('slideCounter');
+
+        function updateUI() {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === currentSlide);
+            });
+            progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+            slideCounter.textContent = (currentSlide + 1) + ' / ' + slides.length;
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) { currentSlide++; updateUI(); }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) { currentSlide--; updateUI(); }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
